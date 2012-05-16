@@ -19,7 +19,12 @@ ActiveRecord::Base.class_eval do
 
       send scope_method, :with_settings_for_var_and_value, lambda { |var, value| { :joins => "JOIN settings ON (settings.target_id = #{self.table_name}.#{self.primary_key} AND
                                                                               settings.target_type = '#{self.base_class.name}') AND
-                                                                              settings.var = '#{var}' AND settings.value = '#{value}' " } }                                                               
+                                                                              settings.var = '#{var}' AND settings.value >= '#{value}' " } }
+
+      send scope_method, :apply_privacy, lambda { |value| { :joins => "JOIN settings ON (settings.target_id = #{self.table_name}.#{self.primary_key} AND
+                                                                              settings.target_type = '#{self.base_class.name}') AND
+                                                                              settings.var = 'privacy' AND settings.value >= '#{value}' " } }
+
       send scope_method, :without_settings, :joins => "LEFT JOIN settings ON (settings.target_id = #{self.table_name}.#{self.primary_key} AND
                                                                  settings.target_type = '#{self.base_class.name}')",
                                             :conditions => 'settings.id IS NULL'
